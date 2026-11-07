@@ -228,7 +228,7 @@ export function Ajustes() {
                 <dd
                   className={`font-semibold ${storageOk ? 'text-emerald-700' : 'text-rose-700'}`}
                 >
-                  {storageOk ? 'localStorage OK' : 'No disponible'}
+                  {storageOk ? 'Disponible' : 'No disponible'}
                 </dd>
               </div>
             </dl>

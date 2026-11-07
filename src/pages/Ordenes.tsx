@@ -7,13 +7,17 @@ import { EmptyState } from '../components/EmptyState'
 import { OrdenForm } from '../components/OrdenForm'
 import { PageHeader } from '../components/PageHeader'
 import { useApp } from '../context/AppContext'
-import { normalizar } from '../data/calles'
+import { normalizar, DISTRITOS } from '../data/calles'
 import { fecha, moneda, numero } from '../lib/format'
-import { RESULTADO_LABELS } from '../lib/labels'
+import {
+  PRIORIDADES,
+  PRIORIDAD_LABELS,
+  RESULTADO_LABELS,
+} from '../lib/labels'
 import { puedeEditarOrden } from '../lib/permissions'
 import { calcularCosto } from '../lib/rules'
 import { nombreEquipo } from '../lib/selectors'
-import type { EstadoOrden, ResultadoOrden } from '../types'
+import type { EstadoOrden, Prioridad, ResultadoOrden } from '../types'
 
 const RESULTADO_BADGE: Record<ResultadoOrden, string> = {
   reparado: 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200',
@@ -26,6 +30,8 @@ export function Ordenes() {
   const [texto, setTexto] = useState('')
   const [estado, setEstado] = useState<EstadoOrden | ''>('')
   const [equipoId, setEquipoId] = useState('')
+  const [distrito, setDistrito] = useState('')
+  const [prioridad, setPrioridad] = useState<Prioridad | ''>('')
   const [crearAbierto, setCrearAbierto] = useState(false)
   const [avanceId, setAvanceId] = useState<string | null>(null)
 
@@ -43,6 +49,8 @@ export function Ordenes() {
       }
       if (estado && orden.estado !== estado) return false
       if (equipoId && orden.equipoId !== equipoId) return false
+      if (distrito && bache?.distrito !== distrito) return false
+      if (prioridad && bache?.prioridad !== prioridad) return false
       return true
     })
     .sort((a, b) => {
@@ -53,12 +61,14 @@ export function Ordenes() {
   const abiertas = ordenes.filter((orden) => orden.estado === 'abierta').length
   const cerradas = ordenes.length - abiertas
   const editable = puedeEditarOrden(rol)
-  const hayFiltros = Boolean(texto || estado || equipoId)
+  const hayFiltros = Boolean(texto || estado || equipoId || distrito || prioridad)
 
   function limpiar() {
     setTexto('')
     setEstado('')
     setEquipoId('')
+    setDistrito('')
+    setPrioridad('')
   }
 
   return (
@@ -114,7 +124,7 @@ export function Ordenes() {
       </div>
 
       <section className="card mb-4 p-4">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_180px_220px_auto]">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-[1fr_170px_200px_170px_160px_auto]">
           <div className="relative">
             <Search
               size={16}
@@ -150,6 +160,34 @@ export function Ordenes() {
             {equipos.map((equipo) => (
               <option key={equipo.id} value={equipo.id}>
                 {equipo.nombre}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="input"
+            value={distrito}
+            onChange={(evento) => setDistrito(evento.target.value)}
+            aria-label="Filtrar por distrito del bache"
+          >
+            <option value="">Todos los distritos</option>
+            {DISTRITOS.map((item) => (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="input"
+            value={prioridad}
+            onChange={(evento) => setPrioridad(evento.target.value as Prioridad | '')}
+            aria-label="Filtrar por prioridad del bache"
+          >
+            <option value="">Todas las prioridades</option>
+            {PRIORIDADES.map((item) => (
+              <option key={item} value={item}>
+                {PRIORIDAD_LABELS[item]}
               </option>
             ))}
           </select>

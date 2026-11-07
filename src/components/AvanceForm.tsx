@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useApp } from '../context/AppContext'
 import { moneda } from '../lib/format'
-import { RESULTADO_LABELS } from '../lib/labels'
+import { EQUIPAMIENTO_OPCIONES, RESULTADO_LABELS } from '../lib/labels'
 import { desglosarCosto } from '../lib/rules'
 import { nombreEquipo } from '../lib/selectors'
 import type { ResultadoOrden } from '../types'
@@ -17,20 +17,28 @@ export function AvanceForm({
   onClose: () => void
   ordenId: string | null
 }) {
-  const { ordenes, baches, equipos, ajustes, actualizarOrden, cerrarOrden } = useApp()
+  const { rol, ordenes, baches, equipos, ajustes, actualizarOrden, cerrarOrden } =
+    useApp()
   const [horas, setHoras] = useState('0')
   const [materialM3, setMaterialM3] = useState('0')
   const [observaciones, setObservaciones] = useState('')
+  const [equipoId, setEquipoId] = useState('')
+  const [personas, setPersonas] = useState('2')
+  const [equipamiento, setEquipamiento] = useState<string[]>([])
   const [error, setError] = useState('')
 
   const orden = ordenes.find((item) => item.id === ordenId)
   const bache = orden ? baches.find((item) => item.id === orden.bacheId) : undefined
+  const puedeAsignar = rol === 'personal'
 
   useEffect(() => {
     if (!open || !orden) return
     setHoras(String(orden.horas))
     setMaterialM3(String(orden.materialM3))
     setObservaciones(orden.observaciones ?? '')
+    setEquipoId(orden.equipoId)
+    setPersonas(String(orden.personas))
+    setEquipamiento([...orden.equipamiento])
     setError('')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, ordenId])
@@ -40,15 +48,36 @@ export function AvanceForm({
   const ordenActual = orden
   const horasNumero = Number(horas)
   const materialNumero = Number(materialM3)
+  const personasNumero = Number(personas)
+  const personasCalculo = Number.isFinite(personasNumero)
+    ? personasNumero
+    : orden.personas
   const desglose = desglosarCosto(
     {
       horas: Number.isFinite(horasNumero) ? horasNumero : 0,
-      personas: orden.personas,
+      personas: personasCalculo,
       materialM3: Number.isFinite(materialNumero) ? materialNumero : 0,
-      equipamiento: orden.equipamiento,
+      equipamiento,
     },
     ajustes,
   )
+
+  function alternarEquipamiento(nombre: string) {
+    setEquipamiento((previo) =>
+      previo.includes(nombre)
+        ? previo.filter((item) => item !== nombre)
+        : [...previo, nombre],
+    )
+  }
+
+  function asignacion() {
+    if (!puedeAsignar) return {}
+    return {
+      equipoId,
+      personas: Number(personas),
+      equipamiento,
+    }
+  }
 
   function guardar(evento: FormEvent) {
     evento.preventDefault()
@@ -57,6 +86,7 @@ export function AvanceForm({
       horas: Number(horas),
       materialM3: Number(materialM3),
       observaciones,
+      ...asignacion(),
     })
     if (!resultado.ok) {
       setError(resultado.error)
@@ -75,6 +105,7 @@ export function AvanceForm({
       horas: Number(horas),
       materialM3: Number(materialM3),
       observaciones,
+      ...asignacion(),
     })
     if (!respuesta.ok) {
       setError(respuesta.error)
@@ -88,7 +119,7 @@ export function AvanceForm({
       open={open}
       onClose={onClose}
       title={`Avance de ${orden.id}`}
-      description="Registra horas y material; luego guarda el avance o cierra la orden con un resultado."
+      description="Registra horas y material. El personal también puede ajustar la asignación antes de guardar o cerrar la orden."
     >
       <form onSubmit={guardar} className="space-y-4">
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
@@ -99,13 +130,79 @@ export function AvanceForm({
             {bache ? <EstadoBadge estado={bache.estado} /> : null}
           </div>
           <p className="mt-1 text-xs text-slate-500">
-            {nombreEquipo(equipos, orden.equipoId)} · {orden.personas}{' '}
-            {orden.personas === 1 ? 'persona' : 'personas'} ·{' '}
-            {orden.equipamiento.length > 0
-              ? orden.equipamiento.join(', ')
+            {nombreEquipo(equipos, puedeAsignar && equipoId ? equipoId : orden.equipoId)} ·{' '}
+            {puedeAsignar ? personas : orden.personas}{' '}
+            {(puedeAsignar ? Number(personas) : orden.personas) === 1
+              ? 'persona'
+              : 'personas'}{' '}
+            ·{' '}
+            {(puedeAsignar ? equipamiento : orden.equipamiento).length > 0
+              ? (puedeAsignar ? equipamiento : orden.equipamiento).join(', ')
               : 'Sin equipamiento'}
           </p>
         </div>
+
+        {puedeAsignar ? (
+          <fieldset className="rounded-xl border border-slate-200 p-3">
+            <legend className="px-1 text-sm font-semibold text-slate-900">
+              Asignación de la orden
+            </legend>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="label" htmlFor="avance-equipo">
+                  Equipo de reparación
+                </label>
+                <select
+                  id="avance-equipo"
+                  className="input"
+                  value={equipoId}
+                  onChange={(evento) => setEquipoId(evento.target.value)}
+                >
+                  {equipos.map((equipo) => (
+                    <option key={equipo.id} value={equipo.id}>
+                      {equipo.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="label" htmlFor="avance-personas">
+                  Cantidad de personas
+                </label>
+                <input
+                  id="avance-personas"
+                  type="number"
+                  min={1}
+                  max={50}
+                  step={1}
+                  className="input"
+                  value={personas}
+                  onChange={(evento) => setPersonas(evento.target.value)}
+                  required
+                />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="label">Equipamiento asignado</span>
+              <div className="grid gap-2 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:grid-cols-2">
+                {EQUIPAMIENTO_OPCIONES.map((opcion) => (
+                  <label
+                    key={opcion}
+                    className="flex cursor-pointer items-center gap-2 text-sm text-slate-700"
+                  >
+                    <input
+                      type="checkbox"
+                      className="size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      checked={equipamiento.includes(opcion)}
+                      onChange={() => alternarEquipamiento(opcion)}
+                    />
+                    {opcion}
+                  </label>
+                ))}
+              </div>
+            </div>
+          </fieldset>
+        ) : null}
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

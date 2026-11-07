@@ -21,11 +21,16 @@ Requisitos: Node.js 20.19+ o 22.12+ (probado con Node 24).
 
 ```bash
 npm install
-npm run dev       # http://localhost:5173
-npm run build     # genera dist/
-npm run preview   # sirve la build local
-npm test          # pruebas unitarias
+npm run dev
 ```
+
+| Comando | Qué hace |
+| --- | --- |
+| `npm run dev` | Servidor de desarrollo en `http://localhost:5173` |
+| `npm run build` | Valida TypeScript y genera la build estática en `dist/` |
+| `npm run preview` | Sirve localmente la build de `dist/` |
+| `npm test` | Ejecuta las pruebas unitarias con Vitest |
+| `npm run test:watch` | Pruebas en modo interactivo |
 
 ## Despliegue en Vercel
 
@@ -86,6 +91,24 @@ filtrado y la protección de datos.
 Si un rol entra a una ruta restringida (incluso cambiando la URL), se muestra
 **Acceso denegado**.
 
+## Cobertura de requisitos
+
+| Requisito | Dónde se implementa |
+| --- | --- |
+| RF-01 Registrar bache | `pages/ReportarBache.tsx`, `AppContext.addBache` |
+| RF-02 ID único | `lib/ids.ts` (`BCH-0001`, `ORD-0001`, `DAN-0001`…) |
+| RF-03 Distrito por dirección | `data/calles.ts` + autocompletado del formulario |
+| RF-04 Prioridad por tamaño | `lib/rules.ts` (`calcularPrioridad`) |
+| RF-05 Crear orden de trabajo | `components/OrdenForm.tsx`, `AppContext.crearOrden` |
+| RF-06 Registrar avance y estado | `components/AvanceForm.tsx`, `actualizarOrden`, `cerrarOrden` |
+| RF-07 Costo de reparación | `lib/rules.ts` (`desglosarCosto`) + tarifas en Ajustes |
+| RF-08 Archivo de daños | `pages/Danos.tsx`, `AppContext.addDano` |
+| RF-09 Filtros de baches y órdenes | `pages/Baches.tsx`, `pages/Ordenes.tsx` |
+| RNF-01 Respuesta inmediata | Estado en memoria + `localStorage`; sin llamadas de red |
+| RNF-02 Privacidad y acceso | `lib/permissions.ts`, `RequireRole`, `AccesoDenegado` |
+| RNF-03 Diseño responsive | Tailwind con tablas en escritorio y tarjetas en móvil |
+| RNF-04 Reporte sin capacitación | Formulario corto, etiquetas claras y validaciones |
+
 ## Reglas de negocio
 
 ### Prioridad (RF-04)
@@ -123,6 +146,13 @@ No reparado ──▶ Trabajo en proceso ──▶ Reparado
 - Un bache puede tener varias órdenes, pero **solo una abierta a la vez**.
 - Las transiciones se validan en `src/lib/rules.ts` y en `AppContext`; no se pueden
   forzar desde la interfaz.
+
+### Filtros de consulta (RF-09)
+
+La lista de baches filtra por texto (ID, calle o dirección), distrito, estado y
+prioridad. La lista de órdenes filtra por texto, estado de la orden, equipo,
+distrito del bache y prioridad del bache. El personal y el supervisor usan estas
+vistas para la consulta operativa.
 
 ### Costo de reparación (RF-07)
 
@@ -185,6 +215,8 @@ Colecciones en claves separadas:
 ## Estructura del proyecto
 
 ```text
+public/
+  favicon.svg
 src/
   components/     Layout, badges, modales, formularios de orden/avance, guardas
   context/        AppContext: estado, permisos y persistencia
@@ -196,7 +228,28 @@ src/
   types.ts        modelo de datos
   App.tsx         rutas
   main.tsx        punto de entrada
+index.html
+package.json
+tsconfig.json
+vite.config.ts
+.gitignore
+base.md           especificación original
+README.md
 ```
+
+## Control de versiones
+
+El archivo `.gitignore` excluye lo que no debe subirse al repositorio:
+
+- Dependencias (`node_modules/`) y builds (`dist/`, `dist-ssr/`, `build/`).
+- Cobertura y artefactos de pruebas (`coverage/`, `playwright-report/`,
+  `test-results/`).
+- Variables de entorno (`.env`, `.env.*`, conservando `.env.example`).
+- Configuración local de Vercel (`.vercel/`) y cachés (`.vite/`, `.cache/`).
+- Logs de npm/yarn/pnpm y archivos del sistema o del editor (`.DS_Store`,
+  `Thumbs.db`, `.idea/`, `.vscode/*` salvo extensiones recomendadas).
+
+`package-lock.json` sí se versiona para que las instalaciones sean reproducibles.
 
 ## Pruebas
 
@@ -213,9 +266,10 @@ npm test
 - Todas las transiciones permitidas y las prohibidas; `reparado` como estado
   terminal.
 
-Además se verificó el flujo completo en navegador (crear bache, crear orden,
-registrar avance, cerrar como reparado, persistencia tras recargar, privacidad de
-datos y acceso denegado).
+Además se verificó el flujo completo en navegador: crear bache, crear orden,
+registrar avance, reasignar equipo/personas/equipamiento, cerrar como reparado,
+filtrar órdenes por distrito y prioridad, persistencia tras recargar, privacidad de
+datos y acceso denegado. La verificación se ejecutó sin errores de consola.
 
 ## Decisiones de implementación
 
@@ -236,6 +290,9 @@ La especificación dejaba algunos puntos abiertos. Se resolvieron así:
 7. **`HashRouter`** para evitar configuración de rewrites en Vercel.
 8. **Formato es-AR** para fechas y montos (`$ 1.234,50`), coherente con el idioma de
    la interfaz.
+9. **El personal puede reasignar la orden** (equipo, personas y equipamiento) desde
+   el formulario de avance, además de registrar horas y material. El equipo de
+   reparación solo registra horas, material, observaciones y el resultado.
 
 ## Limitaciones conocidas
 
