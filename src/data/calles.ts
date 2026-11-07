@@ -3,27 +3,42 @@ export interface Calle {
   distrito: string
 }
 
-/** Catálogo local de calles de la ciudad ficticia de Villa Nueva. */
+/** Catálogo local de calles y avenidas de la ciudad de Cusco. */
 export const CALLES: Calle[] = [
-  { nombre: 'Av. Central', distrito: 'Centro' },
-  { nombre: 'Calle 1 de Mayo', distrito: 'Centro' },
-  { nombre: 'Calle San José', distrito: 'Centro' },
-  { nombre: 'Av. del Parque', distrito: 'Centro' },
-  { nombre: 'Av. de los Álamos', distrito: 'Norte' },
-  { nombre: 'Calle Los Pinos', distrito: 'Norte' },
-  { nombre: 'Calle Las Begonias', distrito: 'Norte' },
-  { nombre: 'Av. San Martín', distrito: 'Sur' },
-  { nombre: 'Calle Las Acacias', distrito: 'Sur' },
-  { nombre: 'Calle El Progreso', distrito: 'Sur' },
-  { nombre: 'Av. Los Andes', distrito: 'Este' },
-  { nombre: 'Calle El Mirador', distrito: 'Este' },
-  { nombre: 'Calle Los Cedros', distrito: 'Este' },
-  { nombre: 'Av. del Trabajo', distrito: 'Oeste' },
-  { nombre: 'Calle La Ribera', distrito: 'Oeste' },
-  { nombre: 'Calle Los Olivos', distrito: 'Oeste' },
+  // Centro Histórico
+  { nombre: 'Av. El Sol', distrito: 'Centro Histórico' },
+  { nombre: 'Av. Garcilaso de la Vega', distrito: 'Centro Histórico' },
+  { nombre: 'Calle Plateros', distrito: 'Centro Histórico' },
+  { nombre: 'Av. Tullumayo', distrito: 'Centro Histórico' },
+
+  // Wanchaq
+  { nombre: 'Av. de la Cultura', distrito: 'Wanchaq' },
+  { nombre: 'Av. Ayacucho', distrito: 'Wanchaq' },
+  { nombre: 'Av. 28 de Julio', distrito: 'Wanchaq' },
+
+  // Santiago
+  { nombre: 'Av. Huayruropata', distrito: 'Santiago' },
+  { nombre: 'Av. La Paz', distrito: 'Santiago' },
+  { nombre: 'Av. 24 de Junio', distrito: 'Santiago' },
+
+  // San Sebastián
+  { nombre: 'Av. Cusco', distrito: 'San Sebastián' },
+  { nombre: 'Av. Marcavalle', distrito: 'San Sebastián' },
+  { nombre: 'Calle Los Cipreses', distrito: 'San Sebastián' },
+
+  // San Jerónimo
+  { nombre: 'Av. San Jerónimo', distrito: 'San Jerónimo' },
+  { nombre: 'Av. Los Álamos', distrito: 'San Jerónimo' },
+  { nombre: 'Calle Manco Cápac', distrito: 'San Jerónimo' },
 ]
 
-export const DISTRITOS = ['Centro', 'Norte', 'Sur', 'Este', 'Oeste'] as const
+export const DISTRITOS = [
+  'Centro Histórico',
+  'Wanchaq',
+  'Santiago',
+  'San Sebastián',
+  'San Jerónimo',
+] as const
 
 export function normalizar(texto: string): string {
   return texto

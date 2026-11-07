@@ -89,7 +89,7 @@ export function Inicio() {
     rol === 'ciudadano'
       ? 'Reporta baches en tu barrio y sigue el estado de tus reclamos. Tus datos personales quedan protegidos.'
       : rol === 'personal'
-        ? 'Gestiona los reportes ciudadanos, las órdenes de trabajo y el archivo de daños de Villa Nueva.'
+        ? 'Gestiona los reportes ciudadanos, las órdenes de trabajo y el archivo de daños de Cusco.'
         : rol === 'equipo'
           ? 'Consulta las órdenes asignadas, registra el avance y cierra los trabajos de reparación.'
           : 'Supervisa la operación completa: estado de los baches, costos, distritos y configuración de tarifas.'

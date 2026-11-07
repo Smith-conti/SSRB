@@ -109,14 +109,14 @@ export function Ajustes() {
               </label>
               <div className="relative">
                 <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-slate-400">
-                  $
+                  S/
                 </span>
                 <input
                   id="tarifa-hora"
                   type="number"
                   min={0.01}
                   step={0.01}
-                  className="input pl-7"
+                  className="input pl-9"
                   value={tarifaHora}
                   onChange={(evento) => setTarifaHora(evento.target.value)}
                   required
@@ -130,14 +130,14 @@ export function Ajustes() {
               </label>
               <div className="relative">
                 <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-slate-400">
-                  $
+                  S/
                 </span>
                 <input
                   id="costo-material"
                   type="number"
                   min={0.01}
                   step={0.01}
-                  className="input pl-7"
+                  className="input pl-9"
                   value={costoMaterialM3}
                   onChange={(evento) => setCostoMaterialM3(evento.target.value)}
                   required
@@ -151,14 +151,14 @@ export function Ajustes() {
               </label>
               <div className="relative">
                 <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-slate-400">
-                  $
+                  S/
                 </span>
                 <input
                   id="costo-equipamiento"
                   type="number"
                   min={0.01}
                   step={0.01}
-                  className="input pl-7"
+                  className="input pl-9"
                   value={costoEquipamiento}
                   onChange={(evento) => setCostoEquipamiento(evento.target.value)}
                   required

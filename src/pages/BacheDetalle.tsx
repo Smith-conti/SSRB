@@ -109,10 +109,10 @@ export function BacheDetalle() {
       : verDatos || (rol === 'ciudadano' && bache.ciudadanoId === ciudadanoActualId)
         ? {
             nombre:
-              nombreCiudadano(ciudadanos, bache.ciudadanoId) ?? 'Ciudadano de Villa Nueva',
+              nombreCiudadano(ciudadanos, bache.ciudadanoId) ?? 'Ciudadano de Cusco',
             telefono: telefonoCiudadano(ciudadanos, bache.ciudadanoId),
           }
-        : { nombre: 'Ciudadano de Villa Nueva', telefono: undefined }
+        : { nombre: 'Ciudadano de Cusco', telefono: undefined }
 
   return (
     <div>

@@ -1,9 +1,12 @@
 # SSRB · Demo del Sistema de Seguimiento y Reparación de Baches
 
-Demo web del **SSRB** para un departamento de obras públicas de la ciudad ficticia de
-**Villa Nueva**. Funciona **sin backend ni base de datos**: todos los datos se guardan
+Demo web del **SSRB** para un departamento de obras públicas de la ciudad de
+**Cusco (Perú)**. Funciona **sin backend ni base de datos**: todos los datos se guardan
 en el `localStorage` del navegador y el sitio se puede desplegar como contenido
 estático en Vercel.
+
+Las calles y distritos corresponden a Cusco; los reportes, personas y montos son
+datos ficticios de demostración.
 
 > **Demo:** los datos se guardan solo en este navegador.
 
@@ -124,10 +127,10 @@ prioridad **alta**.
 
 ### Distrito y catálogo de calles (RF-03)
 
-`src/data/calles.ts` contiene 16 calles de Villa Nueva distribuidas en 5 distritos
-(Centro, Norte, Sur, Este y Oeste). El formulario ofrece autocompletado con
-`datalist`, sugiere calles y muestra el distrito detectado. Si la calle no está en
-el catálogo, no se puede registrar el bache.
+`src/data/calles.ts` contiene 16 calles y avenidas de Cusco distribuidas en 5
+distritos (Centro Histórico, Wanchaq, Santiago, San Sebastián y San Jerónimo). El
+formulario ofrece autocompletado con `datalist`, sugiere calles y muestra el distrito
+detectado. Si la calle no está en el catálogo, no se puede registrar el bache.
 
 ### Estados del bache
 
@@ -164,7 +167,7 @@ costo = horas × personas × tarifaHora
 
 - `tarifaHora`, `costoMaterialM3` y `costoEquipamiento` son configurables en
   **Ajustes** (solo Supervisor).
-- Valores por defecto: **$ 25** por hora/persona, **$ 60** por m³ y **$ 120** de
+- Valores por defecto: **S/ 25** por hora/persona, **S/ 60** por m³ y **S/ 120** de
   equipamiento por orden.
 - El costo de equipamiento es un valor **fijo por orden**, no por hora, para que la
   fórmula sea simple y verificable.
@@ -208,6 +211,8 @@ Colecciones en claves separadas:
   `localStorage` directamente.
 - Al primer arranque se cargan **12 baches**, **3 equipos**, **8 órdenes** y **3
   reclamos** de ejemplo.
+- Si los datos guardados son de una versión anterior con otros distritos, la demo
+  recarga automáticamente los datos de ejemplo de Cusco.
 - **Exportar datos** descarga un JSON con todas las colecciones y las tarifas.
 - **Restablecer demo** borra las colecciones de datos y vuelve a cargar los ejemplos
   (mantiene el rol activo).
@@ -288,8 +293,8 @@ La especificación dejaba algunos puntos abiertos. Se resolvieron así:
    (RF-05) y el equipo registra avances (RF-06).
 6. **Exportar y restablecer** viven en Ajustes, disponibles solo para el Supervisor.
 7. **`HashRouter`** para evitar configuración de rewrites en Vercel.
-8. **Formato es-AR** para fechas y montos (`$ 1.234,50`), coherente con el idioma de
-   la interfaz.
+8. **Formato es-PE** para fechas y montos en soles (`S/ 1,234.50`), coherente con la
+   ciudad de Cusco y el idioma de la interfaz.
 9. **El personal puede reasignar la orden** (equipo, personas y equipamiento) desde
    el formulario de avance, además de registrar horas y material. El equipo de
    reparación solo registra horas, material, observaciones y el resultado.

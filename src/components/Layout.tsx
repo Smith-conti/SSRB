@@ -101,7 +101,7 @@ export function Layout() {
           </div>
           <div>
             <p className="text-base leading-tight font-bold text-white">SSRB</p>
-            <p className="text-[11px] text-slate-400">Villa Nueva · Obras públicas</p>
+            <p className="text-[11px] text-slate-400">Cusco · Obras públicas</p>
           </div>
         </div>
 
@@ -193,8 +193,7 @@ export function Layout() {
           <Outlet />
 
           <footer className="mt-10 border-t border-slate-200 pt-5 text-xs text-slate-500">
-            SSRB · Demo del Sistema de Seguimiento y Reparación de Baches · Villa
-            Nueva
+            SSRB · Demo del Sistema de Seguimiento y Reparación de Baches · Cusco
           </footer>
         </main>
       </div>

@@ -82,7 +82,7 @@ export function Panel() {
       <PageHeader
         eyebrow="Supervisor"
         title="Panel de control"
-        description="Indicadores de la operación de baches de Villa Nueva: estado, prioridad, distritos y costos."
+        description="Indicadores de la operación de baches de Cusco: estado, prioridad, distritos y costos."
         actions={
           <Link to="/ajustes" className="btn-secondary">
             <Settings size={16} />

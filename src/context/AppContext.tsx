@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { buscarCalle } from '../data/calles'
+import { DISTRITOS, buscarCalle } from '../data/calles'
 import { crearDatosDemo } from '../data/seed'
 import { siguienteId } from '../lib/ids'
 import { ESTADO_LABELS } from '../lib/labels'
@@ -112,6 +112,7 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | null>(null)
 
 const ROLES_VALIDOS: Rol[] = ['ciudadano', 'personal', 'equipo', 'supervisor']
+const DISTRITOS_VALIDOS = new Set<string>(DISTRITOS)
 
 function esArreglo(valor: unknown): valor is unknown[] {
   return Array.isArray(valor)
@@ -128,34 +129,51 @@ function esAjustesValido(valor: unknown): valor is Ajustes {
 function cargarEstadoInicial() {
   const semilla = crearDatosDemo()
 
-  const baches = (() => {
-    const guardado = leerJSON<unknown>(CLAVES.baches, null)
-    return esArreglo(guardado) ? (guardado as Bache[]) : semilla.baches
-  })()
+  const bachesGuardados = leerJSON<unknown>(CLAVES.baches, null)
+  // Si los datos guardados son de una versión anterior con otra ciudad,
+  // recargamos la semilla completa para evitar distritos fuera del catálogo.
+  const datosDeOtraCiudad =
+    esArreglo(bachesGuardados) &&
+    (bachesGuardados as Bache[]).some(
+      (bache) => !DISTRITOS_VALIDOS.has(bache.distrito),
+    )
+
+  const baches =
+    !datosDeOtraCiudad && esArreglo(bachesGuardados)
+      ? (bachesGuardados as Bache[])
+      : semilla.baches
 
   const ordenes = (() => {
     const guardado = leerJSON<unknown>(CLAVES.ordenes, null)
-    return esArreglo(guardado) ? (guardado as Orden[]) : semilla.ordenes
+    return !datosDeOtraCiudad && esArreglo(guardado)
+      ? (guardado as Orden[])
+      : semilla.ordenes
   })()
 
   const danos = (() => {
     const guardado = leerJSON<unknown>(CLAVES.danos, null)
-    return esArreglo(guardado) ? (guardado as Dano[]) : semilla.danos
+    return !datosDeOtraCiudad && esArreglo(guardado)
+      ? (guardado as Dano[])
+      : semilla.danos
   })()
 
   const ciudadanos = (() => {
     const guardado = leerJSON<unknown>(CLAVES.ciudadanos, null)
-    return esArreglo(guardado) ? (guardado as Ciudadano[]) : semilla.ciudadanos
+    return !datosDeOtraCiudad && esArreglo(guardado)
+      ? (guardado as Ciudadano[])
+      : semilla.ciudadanos
   })()
 
   const equipos = (() => {
     const guardado = leerJSON<unknown>(CLAVES.equipos, null)
-    return esArreglo(guardado) ? (guardado as Equipo[]) : semilla.equipos
+    return !datosDeOtraCiudad && esArreglo(guardado)
+      ? (guardado as Equipo[])
+      : semilla.equipos
   })()
 
   const ajustes = (() => {
     const guardado = leerJSON<unknown>(CLAVES.ajustes, null)
-    if (esAjustesValido(guardado)) return guardado
+    if (!datosDeOtraCiudad && esAjustesValido(guardado)) return guardado
     return semilla.ajustes
   })()
 
@@ -226,7 +244,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     const calle = buscarCalle(input.calle)
     if (!calle) {
-      return { ok: false, error: 'Selecciona una calle del catálogo de Villa Nueva.' }
+      return { ok: false, error: 'Selecciona una calle del catálogo de Cusco.' }
     }
     if (!textoRequerido(input.altura)) {
       return { ok: false, error: 'Indica la altura o el número de la dirección.' }

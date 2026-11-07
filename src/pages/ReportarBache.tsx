@@ -95,7 +95,7 @@ export function ReportarBache() {
                   list="catalogo-calles"
                   value={calle}
                   onChange={(evento) => setCalle(evento.target.value)}
-                  placeholder="Ej.: Av. Central"
+                  placeholder="Ej.: Av. El Sol"
                   autoComplete="off"
                   required
                 />
@@ -300,7 +300,7 @@ export function ReportarBache() {
           <section className="card p-5 text-sm text-slate-600">
             <h2 className="text-sm font-bold text-slate-900">Catálogo de calles</h2>
             <p className="mt-2">
-              La ciudad ficticia de Villa Nueva tiene {CALLES.length} calles
+              La ciudad de Cusco tiene {CALLES.length} calles y avenidas
               catalogadas en 5 distritos.
             </p>
             <p className="mt-2 text-xs text-slate-500">

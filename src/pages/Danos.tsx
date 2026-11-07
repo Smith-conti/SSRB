@@ -225,7 +225,7 @@ export function Danos() {
                     className="input"
                     value={telefono}
                     onChange={(evento) => setTelefono(evento.target.value)}
-                    placeholder="Ej.: 555-0101"
+                    placeholder="Ej.: 984 123 456"
                     inputMode="tel"
                     required
                   />
